@@ -1,0 +1,19 @@
+spring:
+  cloud:
+    discovery:
+      enabled: false
+    gateway:
+      server:
+        webflux:
+          discovery:
+            locator:
+              enabled: false
+          routes:
+            - id: customers
+              uri: ${customer-service.url:http://localhost:8081}
+              predicates:
+                - Path=/customers,/customers/**
+            - id: products
+              uri: ${inventory-service.url:http://localhost:8082}
+              predicates:
+                - Path=/products,/products/**

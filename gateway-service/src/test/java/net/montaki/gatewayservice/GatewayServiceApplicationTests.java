@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.io.IOException;
@@ -15,6 +16,7 @@ import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ActiveProfiles("static")
 class GatewayServiceApplicationTests {
 
     private static final HttpServer DOWNSTREAM = downstream();
