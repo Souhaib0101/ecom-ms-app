@@ -2,10 +2,15 @@
 
 Application de gestion de facturation construite progressivement avec des microservices.
 
-## Partie 1 : gestion des clients
+## Parties réalisées
 
-Le module [customer-service](customer-service/README.md) expose les clients sur
-`http://localhost:8081/customers`.
+| Partie | Module | API | Base de données |
+| --- | --- | --- | --- |
+| 1 | [customer-service](customer-service/README.md) | <http://localhost:8081/customers> | `jdbc:h2:mem:customers-db` |
+| 2 | [inventory-service](inventory-service/README.md) | <http://localhost:8082/products> | `jdbc:h2:mem:products-db` |
+
+Les deux services proposent les opérations CRUD (GET, POST, PUT, PATCH et DELETE),
+la pagination, le tri et des données de démonstration chargées au démarrage.
 
 ### Technologies
 
@@ -40,6 +45,43 @@ sh customer-service/mvnw -f pom.xml clean verify
 
 Le POM racine agrège les modules ; chaque microservice reste un projet Spring Boot
 autonome, exécutable depuis son propre POM.
+
+### Démarrage des deux services
+
+Ouvrir deux terminaux à la racine du dépôt :
+
+```powershell
+# Terminal 1
+mvn -f customer-service/pom.xml spring-boot:run
+```
+
+```powershell
+# Terminal 2
+mvn -f inventory-service/pom.xml spring-boot:run
+```
+
+Sans Maven installé, remplacer `mvn` par `.\customer-service\mvnw.cmd`.
+Dans IntelliJ IDEA, importer le `pom.xml` racine, puis exécuter
+`CustomerServiceApplication` et `InventoryServiceApplication`.
+
+### Vérifications rapides
+
+```powershell
+Invoke-RestMethod http://localhost:8081/customers
+Invoke-RestMethod http://localhost:8082/products
+Invoke-RestMethod http://localhost:8081/actuator/health
+Invoke-RestMethod http://localhost:8082/actuator/health
+```
+
+Les réponses des listes sont au format HAL : les données se trouvent dans
+`_embedded.customers` ou `_embedded.products`, avec les liens `_links` et les
+informations de pagination `page`.
+
+Les consoles H2 sont accessibles sur `/h2-console` pour chaque service.
+Utiliser l'URL JDBC propre au service, l'utilisateur `sa` et un mot de passe vide.
+
+Les deux suites d'intégration totalisent 10 tests : données initiales et liens HAL,
+pagination/tri, cycle CRUD complet, réponses 404 et santé de chaque service.
 
 ## Ressources du cours
 
