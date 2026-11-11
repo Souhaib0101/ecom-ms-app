@@ -38,6 +38,7 @@ class BillingServiceApplicationTests {
     @BeforeEach
     void remoteData() {
         when(customers.findById(1L)).thenReturn(new Customer(1L, "Mohamed", "mohamed@example.com"));
+        when(customers.findByIdWithFallback(1L)).thenReturn(new Customer(1L, "Mohamed", "mohamed@example.com"));
         when(products.findById(1L)).thenReturn(new Product(1L, "Computer", new BigDecimal("4300.00"), 50));
         when(products.findById(2L)).thenReturn(new Product(2L, "Printer", new BigDecimal("1200.00"), 10));
         when(products.findById(3L)).thenReturn(new Product(3L, "Smartphone", new BigDecimal("3200.00"), 30));
@@ -102,7 +103,11 @@ class BillingServiceApplicationTests {
                 Map.of(), null, StandardCharsets.UTF_8, null);
         when(customers.findById(1L)).thenThrow(new FeignException.ServiceUnavailable(
                 "Unavailable", request, null, Map.of()));
-        mvc.perform(get("/api/bills/1")).andExpect(status().isServiceUnavailable())
+        mvc.perform(post("/api/bills").contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"customerId":1,"items":[{"productId":1,"quantity":1}]}
+                                """))
+                .andExpect(status().isServiceUnavailable())
                 .andExpect(jsonPath("$.detail").exists());
         mvc.perform(get("/api/bills")).andExpect(status().isOk());
     }
