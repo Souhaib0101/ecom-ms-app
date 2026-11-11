@@ -24,7 +24,11 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest(properties = "spring.cloud.discovery.enabled=false")
+@SpringBootTest(properties = {
+        "spring.cloud.discovery.enabled=false",
+        "spring.cloud.config.enabled=false",
+        "spring.config.import=file:../config-repo/application.properties,file:../config-repo/billing-service.properties"
+})
 @AutoConfigureMockMvc
 class BillingServiceApplicationTests {
 

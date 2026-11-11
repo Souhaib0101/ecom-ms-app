@@ -19,7 +19,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest(properties = "spring.cloud.discovery.enabled=false")
+@SpringBootTest(properties = {
+        "spring.cloud.discovery.enabled=false",
+        "spring.cloud.config.enabled=false",
+        "spring.config.import=file:../config-repo/application.properties,file:../config-repo/inventory-service.properties"
+})
 @AutoConfigureMockMvc
 class InventoryServiceApplicationTests {
 
