@@ -44,6 +44,16 @@ class BillingServiceApplicationTests {
     }
 
     @Test
+    void exposesBillsAndTheirLinesThroughSpringDataRest() throws Exception {
+        mvc.perform(get("/bills")).andExpect(status().isOk())
+                .andExpect(jsonPath("$._embedded.bills", hasSize(3)));
+        mvc.perform(get("/bills/1/productItems")).andExpect(status().isOk())
+                .andExpect(jsonPath("$._embedded.productItems", hasSize(3)));
+        mvc.perform(get("/productItems/search/findByBillId?billId=1")).andExpect(status().isOk())
+                .andExpect(jsonPath("$._embedded.productItems", hasSize(3)));
+    }
+
+    @Test
     void enrichesBillAndComputesTotalWithoutRecursiveJson() throws Exception {
         mvc.perform(get("/api/bills/1")).andExpect(status().isOk())
                 .andExpect(jsonPath("$.customer.name").value("Mohamed"))
