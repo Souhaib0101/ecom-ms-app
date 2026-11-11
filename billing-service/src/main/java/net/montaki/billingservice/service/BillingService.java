@@ -35,7 +35,7 @@ public class BillingService {
     public Bill fullBill(Long id) {
         Bill bill = find(id);
         bill.setCustomer(customers.findByIdWithFallback(bill.getCustomerId()));
-        bill.getProductItems().forEach(item -> item.setProduct(products.findById(item.getProductId())));
+        bill.getProductItems().forEach(item -> item.setProduct(products.findByIdWithFallback(item.getProductId())));
         return bill;
     }
 

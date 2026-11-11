@@ -42,6 +42,9 @@ class BillingServiceApplicationTests {
         when(products.findById(1L)).thenReturn(new Product(1L, "Computer", new BigDecimal("4300.00"), 50));
         when(products.findById(2L)).thenReturn(new Product(2L, "Printer", new BigDecimal("1200.00"), 10));
         when(products.findById(3L)).thenReturn(new Product(3L, "Smartphone", new BigDecimal("3200.00"), 30));
+        when(products.findByIdWithFallback(1L)).thenReturn(new Product(1L, "Computer", new BigDecimal("4300.00"), 50));
+        when(products.findByIdWithFallback(2L)).thenReturn(new Product(2L, "Printer", new BigDecimal("1200.00"), 10));
+        when(products.findByIdWithFallback(3L)).thenReturn(new Product(3L, "Smartphone", new BigDecimal("3200.00"), 30));
     }
 
     @Test
