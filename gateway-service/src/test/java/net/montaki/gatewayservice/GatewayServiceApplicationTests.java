@@ -15,7 +15,10 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {
+        "spring.cloud.config.enabled=false",
+        "spring.config.import=file:../config-repo/application.properties,file:../config-repo/gateway-service.properties"
+})
 @ActiveProfiles("static")
 class GatewayServiceApplicationTests {
 
