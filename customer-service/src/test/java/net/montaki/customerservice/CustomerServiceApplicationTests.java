@@ -19,12 +19,30 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest(properties = "spring.cloud.discovery.enabled=false")
+@SpringBootTest(properties = {
+        "spring.cloud.discovery.enabled=false",
+        "spring.cloud.config.enabled=false",
+        "spring.config.import=file:../config-repo/application.properties,file:../config-repo/customer-service.properties"
+})
 @AutoConfigureMockMvc
 class CustomerServiceApplicationTests {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Test
+    void readsSharedConfigurationWithValueInjection() throws Exception {
+        mockMvc.perform(get("/testConfig1")).andExpect(status().isOk())
+                .andExpect(jsonPath("$.p1").value("456"))
+                .andExpect(jsonPath("$.p2").value("224"));
+    }
+
+    @Test
+    void bindsCustomerConfigurationToRecord() throws Exception {
+        mockMvc.perform(get("/testConfig2")).andExpect(status().isOk())
+                .andExpect(jsonPath("$.x").value(11))
+                .andExpect(jsonPath("$.y").value(22));
+    }
 
     @Test
     void listsSeededCustomersWithHalLinks() throws Exception {
