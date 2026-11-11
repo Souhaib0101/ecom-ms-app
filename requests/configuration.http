@@ -1,0 +1,96 @@
+# Partie 3 : configuration centralisee avec Spring Cloud Config.
+# Depuis la racine : mvn --batch-mode --no-transfer-progress package
+# Demarrer dans cet ordre, dans des terminaux separes :
+#   mvn -pl discovery-service spring-boot:run
+#   mvn -pl config-service spring-boot:run
+#   mvn -pl customer-service spring-boot:run
+#   mvn -pl inventory-service spring-boot:run
+#   mvn -pl billing-service spring-boot:run
+#   mvn -pl gateway-service spring-boot:run
+# Attendre l'enregistrement Eureka avant les requetes passant par la gateway.
+#
+# Par defaut, Config Server lit config-repo/ sur la branche main du depot GitHub.
+# Pour lire un depot Git local, creer un clone dedie a la configuration :
+#   git clone https://github.com/Souhaib0101/ecom-ms-app.git C:/config-checkout
+#   PowerShell : $env:CONFIG_GIT_URI='file:///C:/config-checkout'
+# Ne pas pointer vers le dossier de travail : Config Server gere lui-meme son checkout.
+# CONFIG_GIT_LABEL et CONFIG_SEARCH_PATHS permettent de choisir la branche et le dossier.
+# CONFIG_SERVER_URL permet aux clients d'utiliser une autre adresse que localhost:9999.
+# Pour choisir un profil client : SPRING_PROFILES_ACTIVE=dev (ou prod).
+# Les bases H2 des profils prod sont des exemples pour ce TP.
+
+@config = http://localhost:9999
+@customer = http://localhost:8081
+@inventory = http://localhost:8082
+@billing = http://localhost:8083
+@gateway = http://localhost:8888
+
+### Configuration commune : global.params.p1=456 et global.params.p2=224
+GET {{config}}/application/default
+Accept: application/json
+
+### Customer par defaut : x=11, y=22, avec les proprietes communes
+GET {{config}}/customer-service/default
+Accept: application/json
+
+### Customer dev : x=88, y=99, prioritaire sur les valeurs par defaut
+GET {{config}}/customer-service/dev
+Accept: application/json
+
+### Customer prod : x=33, y=44
+GET {{config}}/customer-service/prod
+Accept: application/json
+
+### Configuration de la base produits pour le profil dev
+GET {{config}}/inventory-service/dev
+Accept: application/json
+
+### Configuration des factures, des clients Feign et des circuit breakers
+GET {{config}}/billing-service/default
+Accept: application/json
+
+### Injection des proprietes communes avec @Value
+GET {{customer}}/testConfig1
+Accept: application/json
+
+### Configuration typee : record CustomerConfigParams
+GET {{customer}}/testConfig2
+Accept: application/json
+
+### Meme controleur via la gateway et Eureka
+GET {{gateway}}/customer-service/testConfig1
+Accept: application/json
+
+### Facture complete : gateway -> billing -> customer + inventory
+GET {{gateway}}/billing-service/api/bills/1
+Accept: application/json
+
+### Rafraichissement manuel du client, sans redemarrage
+# Modifier global.params.p1/p2 et customer.params.x/y dans config-repo/.
+# Pour un client dev ou prod, modifier le fichier de ce profil pour x/y.
+# Faire git add des fichiers modifies, git commit, puis git push.
+# Relire testConfig1 et testConfig2 : les anciennes valeurs restent presentes.
+# Executer ce POST, puis relire les deux endpoints : les valeurs sont mises a jour.
+POST {{customer}}/actuator/refresh
+Content-Type: application/json
+Accept: application/json
+
+{}
+
+### Les autres clients disposent egalement du endpoint de refresh
+POST {{inventory}}/actuator/refresh
+Content-Type: application/json
+
+{}
+
+### Rafraichir la configuration du service de facturation
+POST {{billing}}/actuator/refresh
+Content-Type: application/json
+
+{}
+
+### Rafraichir la configuration de la gateway
+POST {{gateway}}/actuator/refresh
+Content-Type: application/json
+
+{}
