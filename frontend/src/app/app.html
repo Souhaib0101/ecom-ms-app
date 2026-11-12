@@ -1,0 +1,18 @@
+<a class="skip-link" href="#contenu">Aller au contenu</a>
+<aside class="sidebar" aria-label="Navigation principale">
+  <a class="brand" routerLink="/" aria-label="Ecom, accueil"><span class="brand-mark">e.</span>ecom<span class="brand-dot">.</span></a>
+  <p class="nav-label">VOTRE ESPACE</p>
+  <nav>
+    <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" ariaCurrentWhenActive="page"><span aria-hidden="true">▦</span>Vue d’ensemble</a>
+    <a routerLink="/clients" routerLinkActive="active" ariaCurrentWhenActive="page"><span aria-hidden="true">◎</span>Clients</a>
+    <a routerLink="/produits" routerLinkActive="active" ariaCurrentWhenActive="page"><span aria-hidden="true">◇</span>Produits</a>
+    <a routerLink="/factures" routerLinkActive="active" ariaCurrentWhenActive="page"><span aria-hidden="true">▤</span>Factures</a>
+  </nav>
+  <div class="sidebar-note"><span class="note-icon" aria-hidden="true">↗</span><strong>Tout est à sa place.</strong><p>Vos clients, votre catalogue et vos factures, dans un seul espace.</p></div>
+  <div class="sidebar-footer"><span class="avatar">EC</span><div><strong>Ecom Manager</strong><small>Espace de gestion</small></div></div>
+</aside>
+<div class="workspace">
+  <header class="topbar"><span>Votre commerce, <strong>en toute simplicité.</strong></span><span class="stack-label">ANGULAR / SPRING CLOUD</span></header>
+  <main id="contenu" tabindex="-1"><router-outlet /></main>
+  <footer class="page-footer"><span>Ecom · Gestion commerciale</span><span>Montants en MAD</span></footer>
+</div>
