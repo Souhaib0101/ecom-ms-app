@@ -1,18 +1,102 @@
-.invoice-layout { display: grid; grid-template-columns: minmax(0, 1fr) 290px; gap: 22px; align-items: start; }
-.invoice-fields { padding: 24px; margin: 0; border: 0; min-width: 0; }
-.customer-field { padding-bottom: 20px; border-bottom: 1px solid var(--line); margin-bottom: 25px; }
-.lines-heading { display: flex; justify-content: space-between; gap: 12px; align-items: center; margin-bottom: 15px; }
-.lines-heading h2 { font-size: 14px; margin: 0; }
-.lines-heading span { font-size: 11px; }
-.invoice-line { display: grid; grid-template-columns: minmax(0, 1fr) 95px 130px; gap: 15px; padding: 19px 0 5px; border-bottom: 1px solid var(--line); margin-bottom: 20px; }
-.line-total { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; padding-top: 2px; }
-.line-total small { font-size: 10px; }
-.line-total strong { font-size: 13px; white-space: nowrap; }
-.summary { position: sticky; top: 24px; }
-.summary .card-body > span { font-size: 12px; }
-.summary-total { font-size: 29px; font-weight: 650; letter-spacing: -.8px; margin: 12px 0 22px; }
-.summary button { width: 100%; margin-top: 12px; }
-.cancel-link { display: block; text-align: center; margin-top: 17px; font-size: 12px; }
-.empty-actions { justify-content: center; }
-@media (max-width: 1200px) { .invoice-layout { grid-template-columns: minmax(0, 1fr); } .summary { position: static; } }
-@media (max-width: 700px) { .invoice-line { grid-template-columns: minmax(0, 1fr) 85px; } .line-total { grid-column: 1 / -1; flex-direction: row; align-items: center; justify-content: space-between; padding-bottom: 17px; } .invoice-fields { padding: 19px; } }
+.invoice-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 290px;
+  gap: 22px;
+  align-items: start;
+}
+.invoice-fields {
+  padding: 24px;
+  margin: 0;
+  border: 0;
+  min-width: 0;
+}
+.customer-field {
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 25px;
+}
+.lines-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 15px;
+}
+.lines-heading h2 {
+  font-size: 14px;
+  margin: 0;
+}
+.lines-heading span {
+  font-size: 11px;
+}
+.invoice-line {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 95px 130px;
+  gap: 15px;
+  padding: 19px 0 5px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 20px;
+}
+.line-total {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+  padding-top: 2px;
+}
+.line-total small {
+  font-size: 10px;
+}
+.line-total strong {
+  font-size: 13px;
+  white-space: nowrap;
+}
+.summary {
+  position: sticky;
+  top: 24px;
+}
+.summary .card-body > span {
+  font-size: 12px;
+}
+.summary-total {
+  font-size: 29px;
+  font-weight: 650;
+  letter-spacing: -0.8px;
+  margin: 12px 0 22px;
+}
+.summary button {
+  width: 100%;
+  margin-top: 12px;
+}
+.cancel-link {
+  display: block;
+  text-align: center;
+  margin-top: 17px;
+  font-size: 12px;
+}
+.empty-actions {
+  justify-content: center;
+}
+@media (max-width: 1200px) {
+  .invoice-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .summary {
+    position: static;
+  }
+}
+@media (max-width: 700px) {
+  .invoice-line {
+    grid-template-columns: minmax(0, 1fr) 85px;
+  }
+  .line-total {
+    grid-column: 1 / -1;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 17px;
+  }
+  .invoice-fields {
+    padding: 19px;
+  }
+}
