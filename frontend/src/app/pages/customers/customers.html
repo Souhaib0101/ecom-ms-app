@@ -1,0 +1,29 @@
+<div class="page-heading"><div><p class="eyebrow">Vos relations commerciales</p><h1>Clients</h1><p class="subtitle">Gardez le contact avec les personnes qui font vivre votre commerce.</p></div><button class="button secondary" type="button" [disabled]="loading() || busy()" (click)="load()">↻ Actualiser</button></div>
+<app-feedback [message]="error()" />
+<app-feedback [message]="success()" kind="success" />
+<div class="split-layout">
+  <section class="card" aria-label="Liste des clients" [attr.aria-busy]="loading()">
+    <div class="card-header"><h2>Votre répertoire</h2><span class="badge">{{ result()?.totalElements ?? 0 }} clients</span></div>
+    @if (loading()) { <div class="empty-state" role="status">Chargement des clients…</div> }
+    @else if (result()?.items?.length) {
+      <div class="table-wrap"><table><thead><tr><th>Client</th><th>Contact</th><th>Actions</th></tr></thead><tbody>
+        @for (customer of result()?.items; track customer.id) {
+          <tr><td><strong>{{ customer.name }}</strong><br><small class="muted">Client #{{ customer.id }}</small></td><td><a [href]="'mailto:' + customer.email">{{ customer.email }}</a></td><td><div class="form-actions"><button class="text-button" type="button" [disabled]="busy()" (click)="edit(customer)" [attr.aria-label]="'Modifier ' + customer.name">Modifier</button><a class="text-button" routerLink="/factures" [queryParams]="{ client: customer.id }" [attr.aria-label]="'Factures de ' + customer.name">Factures</a><button class="text-button danger" type="button" [disabled]="busy()" (click)="deleting.set(customer)" [attr.aria-label]="'Supprimer ' + customer.name">Supprimer</button></div></td></tr>
+        }
+      </tbody></table></div>
+    } @else { <div class="empty-state"><strong>{{ error() ? 'Impossible de charger le répertoire.' : 'Votre premier client vous attend.' }}</strong>{{ error() ? 'Utilisez Actualiser pour réessayer.' : 'Ajoutez un client grâce au formulaire.' }}</div> }
+    @if (deleting(); as customer) { <div class="delete-confirmation" role="group" aria-label="Confirmation de suppression"><span>Supprimer <strong>{{ customer.name }}</strong> ?</span><div class="form-actions"><button class="button secondary small" type="button" [disabled]="busy()" (click)="deleting.set(null)">Annuler la suppression</button><button class="button danger small" type="button" [disabled]="busy()" (click)="remove()">Confirmer la suppression</button></div></div> }
+    <app-pagination [page]="result()" [busy]="loading() || busy()" (change)="load($event)" />
+  </section>
+  <section class="card" aria-labelledby="customer-form-title"><div class="card-header"><h2 id="customer-form-title">{{ editing() ? 'Modifier le client' : 'Ajouter un client' }}</h2></div><div class="card-body">
+    <form [formGroup]="form" (ngSubmit)="save()" novalidate>
+      <div class="field"><label for="customer-name">Nom complet</label><input #nameInput id="customer-name" formControlName="name" autocomplete="name" maxlength="120" placeholder="Ex. Sara Amrani" [readonly]="busy()" [attr.aria-invalid]="form.controls.name.touched && form.controls.name.invalid" aria-describedby="customer-name-error">
+        @if (form.controls.name.touched && form.controls.name.invalid) { <small id="customer-name-error" class="field-error">Saisissez un nom, de 120 caractères maximum.</small> }
+      </div>
+      <div class="field"><label for="customer-email">Adresse e-mail</label><input id="customer-email" formControlName="email" type="email" autocomplete="email" maxlength="254" placeholder="sara@exemple.com" [readonly]="busy()" [attr.aria-invalid]="form.controls.email.touched && form.controls.email.invalid" aria-describedby="customer-email-error">
+        @if (form.controls.email.touched && form.controls.email.invalid) { <small id="customer-email-error" class="field-error">Saisissez une adresse e-mail valide.</small> }
+      </div>
+      <div class="form-actions"><button class="button" type="submit" [disabled]="busy() || loading()">{{ busy() ? 'Enregistrement…' : editing() ? 'Enregistrer' : 'Ajouter le client' }}</button>@if (editing()) { <button class="button secondary" type="button" [disabled]="busy()" (click)="reset()">Annuler</button> }</div>
+    </form>
+  </div></section>
+</div>
