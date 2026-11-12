@@ -1,0 +1,17 @@
+<div class="page-heading"><div><p class="eyebrow">Le point sur votre activité</p><h1>Vue d’ensemble</h1><p class="subtitle">Bienvenue. Voici l’essentiel de votre commerce, en un coup d’œil.</p></div><a class="button" routerLink="/factures/nouvelle">＋ Nouvelle facture</a></div>
+<app-feedback [message]="error()" />
+<section class="stats" aria-label="Indicateurs de votre activité" [attr.aria-busy]="loading()">
+  <article class="card stat"><span class="stat-icon" aria-hidden="true">◎</span><p>Clients</p><strong>{{ loading() ? '—' : stats()?.customers ?? '—' }}</strong><a routerLink="/clients">Votre répertoire ↗</a></article>
+  <article class="card stat"><span class="stat-icon amber" aria-hidden="true">◇</span><p>Produits</p><strong>{{ loading() ? '—' : stats()?.products ?? '—' }}</strong><a routerLink="/produits">Votre catalogue ↗</a></article>
+  <article class="card stat"><span class="stat-icon blue" aria-hidden="true">▤</span><p>Factures</p><strong>{{ loading() ? '—' : stats()?.bills ?? '—' }}</strong><a routerLink="/factures">Votre facturation ↗</a></article>
+  <article class="card stat total-stat"><span class="stat-icon" aria-hidden="true">↗</span><p>Montant facturé</p><strong>{{ loading() || !stats() ? '—' : (stats()!.total | currency) }}</strong><span class="stat-note">Total des factures enregistrées</span></article>
+</section>
+<div class="overview-grid">
+  <section class="card" aria-label="Dernières factures"><div class="card-header"><h2>Dernières factures</h2><a routerLink="/factures" class="view-all">Tout voir ↗</a></div>
+    @if (loading()) { <div class="empty-state" role="status">Chargement de votre activité…</div> }
+    @else if (latest().length) { <div class="table-wrap"><table><thead><tr><th>Facture</th><th>Date</th><th class="number">Montant</th><th>Détail</th></tr></thead><tbody>@for (bill of latest(); track bill.id) { <tr><td><strong>FAC-{{ bill.id }}</strong><br><small class="muted">Client #{{ bill.customerId }}</small></td><td class="muted">{{ bill.billingDate | date:'dd MMM yyyy' }}</td><td class="number"><strong>{{ bill.total | currency }}</strong></td><td><a [routerLink]="['/factures', bill.id]" [attr.aria-label]="'Voir la facture FAC-' + bill.id">Consulter ↗</a></td></tr> }</tbody></table></div> }
+    @else { <div class="empty-state"><strong>{{ error() ? 'Votre activité n’a pas pu être chargée.' : 'Les premières factures apparaîtront ici.' }}</strong>{{ error() ? 'Vérifiez le backend, puis actualisez les données.' : 'Commencez par créer une facture pour votre client.' }}</div> }
+    <div class="activity-footer"><span>{{ updated() && !error() ? 'Dernière actualisation à ' + (updated() | date:'HH:mm') : 'Données des services métier' }}</span><button class="text-button" type="button" [disabled]="loading()" (click)="load()">Actualiser</button></div>
+  </section>
+  <aside class="quick-card"><div class="quick-decoration" aria-hidden="true">e.</div><p class="eyebrow">Moins d’effort, plus de clarté</p><h2>Chaque détail compte.<br>Gardez le fil.</h2><p>Un client à ajouter ? Un prix à mettre à jour ? Votre espace est prêt.</p><a routerLink="/clients">Gérer mes clients <span aria-hidden="true">→</span></a><a routerLink="/produits">Voir mon catalogue <span aria-hidden="true">→</span></a><a routerLink="/factures/nouvelle">Créer une facture <span aria-hidden="true">→</span></a></aside>
+</div>

@@ -1,0 +1,23 @@
+.stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; margin-bottom: 28px; }
+.stat { padding: 22px; position: relative; }
+.stat-icon { display: inline-flex; width: 36px; height: 36px; align-items: center; justify-content: center; border-radius: 10px; background: var(--mint); color: #306c56; font-size: 23px; }
+.stat-icon.amber { color: #9c742a; background: #fff0d6; }
+.stat-icon.blue { color: #597a9b; background: #e9eff7; }
+.stat p { color: var(--muted); font-size: 12px; margin: 22px 0 8px; }
+.stat > strong { display: block; font-size: 32px; letter-spacing: -1px; font-weight: 650; margin-bottom: 17px; }
+.stat > a, .stat-note { font-size: 10px; text-decoration: none; color: var(--muted); }
+.stat > a:hover { color: var(--primary); }
+.total-stat { background: #e7f1e9; border-color: #d6e5d9; }
+.total-stat > strong { font-size: clamp(20px, 2vw, 29px); line-height: 38px; white-space: nowrap; }
+.total-stat .stat-icon { background: #d2e5d8; }
+.overview-grid { display: grid; grid-template-columns: minmax(0, 1fr) 285px; gap: 22px; align-items: start; }
+.view-all { font-size: 12px; text-decoration: none; font-weight: 600; white-space: nowrap; }
+.activity-footer { border-top: 1px solid var(--line); padding: 15px 24px; display: flex; justify-content: space-between; align-items: center; gap: 12px; color: var(--muted); font-size: 11px; }
+.activity-footer button { font-size: 11px; }
+.quick-card { border-radius: 13px; background: #e8eee5; border: 1px solid #dce5d6; padding: 25px; overflow: hidden; position: relative; }
+.quick-decoration { color: #d2dfce; font-size: 100px; font-weight: 800; line-height: 1; letter-spacing: -8px; margin-bottom: 22px; }
+.quick-card h2 { font-size: 23px; line-height: 1.4; letter-spacing: -.6px; }
+.quick-card > p:not(.eyebrow) { color: #6e7f70; font-size: 12px; line-height: 1.8; margin-bottom: 23px; }
+.quick-card > a { padding: 13px 0; border-top: 1px solid #d1dece; display: flex; justify-content: space-between; font-size: 12px; text-decoration: none; font-weight: 600; }
+@media (max-width: 1200px) { .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } .overview-grid { grid-template-columns: minmax(0, 1fr); } .quick-card { display: none; } }
+@media (max-width: 450px) { .stats { gap: 10px; } .stat { padding: 16px; } .stat > strong { font-size: 27px; } .total-stat > strong { font-size: 18px; } .stat-note { font-size: 9px; } }
