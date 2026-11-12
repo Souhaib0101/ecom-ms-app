@@ -1,0 +1,26 @@
+<div class="page-heading"><div><p class="eyebrow">Votre catalogue</p><h1>Produits</h1><p class="subtitle">Un catalogue à jour, des prix clairs et une vue sur vos stocks.</p></div><button class="button secondary" type="button" [disabled]="loading() || busy()" (click)="load()">↻ Actualiser</button></div>
+<app-feedback [message]="error()" />
+<app-feedback [message]="success()" kind="success" />
+<div class="split-layout">
+  <section class="card" aria-label="Liste des produits" [attr.aria-busy]="loading()">
+    <div class="card-header"><h2>Les produits du catalogue</h2><span class="badge">{{ result()?.totalElements ?? 0 }} références</span></div>
+    @if (loading()) { <div class="empty-state" role="status">Chargement des produits…</div> }
+    @else if (result()?.items?.length) {
+      <div class="table-wrap"><table><thead><tr><th>Produit</th><th class="number">Prix unitaire</th><th>Stock</th><th>Actions</th></tr></thead><tbody>
+        @for (product of result()?.items; track product.id) {
+          <tr><td><strong>{{ product.name }}</strong><br><small class="muted">Réf. #{{ product.id }}</small></td><td class="number">{{ product.price | currency }}</td><td><span class="badge" [class.warning]="product.quantity > 0 && product.quantity <= 5" [class.neutral]="product.quantity === 0">{{ product.quantity === 0 ? 'Épuisé' : product.quantity + ' en stock' }}</span></td><td><div class="form-actions"><button class="text-button" type="button" [disabled]="busy()" (click)="edit(product)" [attr.aria-label]="'Modifier ' + product.name">Modifier</button><button class="text-button danger" type="button" [disabled]="busy()" (click)="deleting.set(product)" [attr.aria-label]="'Supprimer ' + product.name">Supprimer</button></div></td></tr>
+        }
+      </tbody></table></div>
+    } @else { <div class="empty-state"><strong>{{ error() ? 'Impossible de charger le catalogue.' : 'Un catalogue prêt à grandir.' }}</strong>{{ error() ? 'Utilisez Actualiser pour réessayer.' : 'Ajoutez votre premier produit grâce au formulaire.' }}</div> }
+    @if (deleting(); as product) { <div class="delete-confirmation" role="group" aria-label="Confirmation de suppression"><span>Supprimer <strong>{{ product.name }}</strong> ?</span><div class="form-actions"><button class="button secondary small" type="button" [disabled]="busy()" (click)="deleting.set(null)">Annuler la suppression</button><button class="button danger small" type="button" [disabled]="busy()" (click)="remove()">Confirmer la suppression</button></div></div> }
+    <app-pagination [page]="result()" [busy]="loading() || busy()" (change)="load($event)" />
+  </section>
+  <section class="card" aria-labelledby="product-form-title"><div class="card-header"><h2 id="product-form-title">{{ editing() ? 'Modifier le produit' : 'Ajouter un produit' }}</h2></div><div class="card-body">
+    <form [formGroup]="form" (ngSubmit)="save()" novalidate>
+      <div class="field"><label for="product-name">Nom du produit</label><input #nameInput id="product-name" formControlName="name" maxlength="120" placeholder="Ex. Clavier sans fil" [readonly]="busy()" aria-describedby="product-name-error" [attr.aria-invalid]="form.controls.name.touched && form.controls.name.invalid">@if (form.controls.name.touched && form.controls.name.invalid) { <small id="product-name-error" class="field-error">Saisissez un nom, de 120 caractères maximum.</small> }</div>
+      <div class="field"><label for="product-price">Prix unitaire (MAD)</label><input id="product-price" formControlName="price" type="number" min="0" max="999999999.99" step="0.01" [readonly]="busy()" aria-describedby="product-price-error" [attr.aria-invalid]="form.controls.price.touched && form.controls.price.invalid">@if (form.controls.price.touched && form.controls.price.invalid) { <small id="product-price-error" class="field-error">Saisissez un prix positif ou nul, avec deux décimales maximum.</small> }</div>
+      <div class="field"><label for="product-quantity">Quantité en stock</label><input id="product-quantity" formControlName="quantity" type="number" min="0" max="2147483647" step="1" [readonly]="busy()" aria-describedby="product-quantity-error" [attr.aria-invalid]="form.controls.quantity.touched && form.controls.quantity.invalid">@if (form.controls.quantity.touched && form.controls.quantity.invalid) { <small id="product-quantity-error" class="field-error">Saisissez un nombre entier positif ou nul, inférieur à 2 147 483 648.</small> }</div>
+      <div class="form-actions"><button class="button" type="submit" [disabled]="busy() || loading()">{{ busy() ? 'Enregistrement…' : editing() ? 'Enregistrer' : 'Ajouter le produit' }}</button>@if (editing()) { <button class="button secondary" type="button" [disabled]="busy()" (click)="reset()">Annuler</button> }</div>
+    </form>
+  </div></section>
+</div>
