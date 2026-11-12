@@ -18,6 +18,16 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/products/products').then((page) => page.Products),
   },
   {
+    path: 'factures',
+    title: 'Factures · Ecom',
+    loadComponent: () => import('./pages/bills/bills').then((page) => page.Bills),
+  },
+  {
+    path: 'factures/:id',
+    title: 'Détail de la facture · Ecom',
+    loadComponent: () => import('./pages/bills/bill-details').then((page) => page.BillDetails),
+  },
+  {
     path: '**',
     title: 'Page introuvable · Ecom',
     loadComponent: () => import('./pages/not-found').then((page) => page.NotFound),

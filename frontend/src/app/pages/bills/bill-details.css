@@ -1,0 +1,14 @@
+.invoice { overflow: hidden; margin-top: 24px; }
+.invoice-heading { display: flex; justify-content: space-between; gap: 20px; padding: 36px; border-bottom: 1px solid var(--line); }
+.invoice-brand { font-size: 34px; font-weight: 750; letter-spacing: -1.5px; }
+.invoice-heading p { margin: 10px 0 0; font-size: 12px; }
+.invoice-reference { text-align: right; }
+.invoice-reference strong { display: block; font-size: 21px; margin-top: 8px; }
+.invoice-customer { padding: 30px 36px; }
+.invoice-customer h2 { margin-bottom: 7px; }
+.invoice-customer p { margin-bottom: 9px; }
+.invoice-customer span { font-size: 12px; }
+.invoice-total { display: flex; justify-content: space-between; align-items: center; gap: 20px; background: #eef6ef; padding: 28px 36px; }
+.invoice-total strong { font-size: 26px; letter-spacing: -.6px; }
+.invoice-note { padding: 24px 36px; margin: 0; color: var(--muted); font-size: 11px; line-height: 1.7; }
+@media (max-width: 700px) { .invoice-heading, .invoice-customer, .invoice-total { padding: 24px; } .invoice-total strong { font-size: 21px; } }

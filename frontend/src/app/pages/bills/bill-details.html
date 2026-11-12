@@ -1,0 +1,17 @@
+<a class="back-link no-print" routerLink="/factures">← Toutes les factures</a>
+<app-feedback [message]="error()" />
+@if (loading()) { <div class="card empty-state" role="status">Chargement de la facture…</div> }
+@else if (bill(); as invoice) {
+  <div class="page-heading"><div><p class="eyebrow">Document de facturation</p><h1>Facture FAC-{{ invoice.id }}</h1><p class="subtitle">Émise le {{ invoice.billingDate | date:'dd MMMM yyyy' }}</p></div><div class="form-actions no-print"><button class="button secondary" type="button" (click)="print()">Imprimer</button><button class="button secondary" type="button" [disabled]="deleting()" (click)="confirming.set(true)">Supprimer la facture</button></div></div>
+  @if (partial()) { <div class="feedback no-print" role="status">Certains détails des clients ou produits sont momentanément indisponibles. Les montants de la facture restent ceux enregistrés.</div> }
+  @if (confirming()) { <div class="delete-confirmation card no-print" role="group" aria-label="Confirmation de suppression"><span>Supprimer définitivement la facture FAC-{{ invoice.id }} ?</span><div class="form-actions"><button class="button secondary small" type="button" [disabled]="deleting()" (click)="confirming.set(false)">Annuler la suppression</button><button class="button danger small" type="button" [disabled]="deleting()" (click)="remove()">{{ deleting() ? 'Suppression…' : 'Confirmer la suppression' }}</button></div></div> }
+  <article class="card invoice">
+    <div class="invoice-heading"><div><span class="invoice-brand">ecom.</span><p class="muted">Gestion commerciale</p></div><div class="invoice-reference"><span class="eyebrow">FACTURE</span><strong>FAC-{{ invoice.id }}</strong><p class="muted">{{ invoice.billingDate | date:'dd/MM/yyyy' }}</p></div></div>
+    <div class="invoice-customer"><p class="eyebrow">Facturé à</p><h2>{{ invoice.customer && invoice.customer.name !== 'Default customer' ? invoice.customer.name : 'Client #' + invoice.customerId }}</h2>@if (invoice.customer && invoice.customer.name !== 'Default customer') { <p class="muted">{{ invoice.customer.email }}</p> }<span class="muted">Référence client #{{ invoice.customerId }}</span></div>
+    <div class="table-wrap"><table><thead><tr><th>Désignation</th><th class="number">Quantité</th><th class="number">Prix unitaire</th><th class="number">Montant</th></tr></thead><tbody>
+      @for (item of invoice.productItems; track item.id) { <tr><td><strong>{{ item.product?.name || 'Produit #' + item.productId }}</strong><br><small class="muted">Réf. #{{ item.productId }}</small></td><td class="number">{{ item.quantity }}</td><td class="number">{{ item.unitPrice | currency }}</td><td class="number">{{ item.amount | currency }}</td></tr> }
+    </tbody></table></div>
+    <div class="invoice-total"><span>Montant total</span><strong>{{ invoice.total | currency }}</strong></div>
+    <p class="invoice-note">Les prix affichés correspondent aux prix enregistrés à la création de cette facture.</p>
+  </article>
+} @else { <div class="card empty-state"><strong>Cette facture n’est pas accessible.</strong><a routerLink="/factures">Revenir à la liste des factures</a></div> }

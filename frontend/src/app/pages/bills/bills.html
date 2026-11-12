@@ -1,0 +1,12 @@
+<div class="page-heading"><div><p class="eyebrow">Votre facturation</p><h1>Factures</h1><p class="subtitle">De chaque commande à son détail, retrouvez l’essentiel.</p></div><a class="button" routerLink="/factures/nouvelle">＋ Nouvelle facture</a></div>
+<app-feedback [message]="error()" />
+<app-feedback [message]="lookupError()" />
+<section class="card" [attr.aria-busy]="loading()" aria-label="Liste des factures">
+  <div class="card-header"><h2>{{ bills().length }} facture(s)</h2><div class="form-actions"><label for="bill-customer-filter">Client</label><select id="bill-customer-filter" [value]="selectedCustomer() ?? ''" (change)="filter($event)" [disabled]="loading()"><option value="">Tous les clients</option>@for (customer of customers(); track customer.id) { <option [value]="customer.id">{{ customer.name }}</option> }</select><button class="button secondary small" type="button" [disabled]="loading()" (click)="reload()">Actualiser</button></div></div>
+  @if (loading()) { <div class="empty-state" role="status">Chargement des factures…</div> }
+  @else if (bills().length) {
+    <div class="table-wrap"><table><thead><tr><th>Numéro</th><th>Client</th><th>Date</th><th class="number">Lignes</th><th class="number">Montant</th><th>Détail</th></tr></thead><tbody>
+      @for (bill of bills(); track bill.id) { <tr><td><strong>FAC-{{ bill.id }}</strong></td><td>{{ customerName(bill.customerId) }}</td><td class="muted">{{ bill.billingDate | date:'dd MMM yyyy' }}</td><td class="number">{{ bill.itemCount }}</td><td class="number"><strong>{{ bill.total | currency }}</strong></td><td><a class="button secondary small" [routerLink]="['/factures', bill.id]" [attr.aria-label]="'Voir la facture FAC-' + bill.id">Consulter ↗</a></td></tr> }
+    </tbody></table></div>
+  } @else { <div class="empty-state"><strong>{{ error() ? 'Les factures ne sont pas accessibles.' : selectedCustomer() ? 'Aucune facture pour ce client.' : 'Votre prochaine vente commence ici.' }}</strong><p>{{ error() ? 'Actualisez pour réessayer.' : 'Créez une facture pour retrouver son détail dans cet espace.' }}</p>@if (!error()) { <a class="button secondary" routerLink="/factures/nouvelle">Créer une facture</a> }</div> }
+</section>

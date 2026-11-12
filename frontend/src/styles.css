@@ -43,6 +43,7 @@ input:focus, select:focus { border-color: var(--primary); }
 input.ng-invalid.ng-touched, select.ng-invalid.ng-touched { border-color: var(--danger); }
 .field-error { color: var(--danger); font-size: 11px; line-height: 1.5; }
 .form-actions { display: flex; gap: 9px; flex-wrap: wrap; align-items: center; }
+.form-actions select { width: auto; max-width: 240px; }
 .form-hint { font-size: 12px; color: var(--muted); line-height: 1.7; }
 .feedback { padding: 13px 17px; border: 1px solid #eacbc6; color: #873a31; background: #fff2ef; border-radius: 8px; margin-bottom: 20px; line-height: 1.6; }
 .feedback.success { color: #216248; background: #eaf6ee; border-color: #c8e3d2; }
