@@ -23,6 +23,11 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/bills/bills').then((page) => page.Bills),
   },
   {
+    path: 'factures/nouvelle',
+    title: 'Nouvelle facture · Ecom',
+    loadComponent: () => import('./pages/bills/bill-create').then((page) => page.BillCreate),
+  },
+  {
     path: 'factures/:id',
     title: 'Détail de la facture · Ecom',
     loadComponent: () => import('./pages/bills/bill-details').then((page) => page.BillDetails),

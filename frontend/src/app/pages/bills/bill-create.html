@@ -1,0 +1,26 @@
+<a class="back-link" routerLink="/factures">← Toutes les factures</a>
+<div class="page-heading"><div><p class="eyebrow">Une nouvelle vente</p><h1>Nouvelle facture</h1><p class="subtitle">Choisissez un client, ajoutez vos produits. Nous faisons le calcul.</p></div><button class="button secondary" type="button" [disabled]="loading() || saving()" (click)="load()">Actualiser les données</button></div>
+<app-feedback [message]="error()" />
+@if (loading()) { <div class="card empty-state" role="status">Chargement des clients et du catalogue…</div> }
+@else if (loaded() && (!customers().length || !products().length)) { <div class="card empty-state"><strong>Préparons votre première facture.</strong><p>Vous avez besoin d’au moins un client et un produit pour continuer.</p><div class="form-actions empty-actions"><a class="button secondary" routerLink="/clients">Gérer les clients</a><a class="button secondary" routerLink="/produits">Gérer les produits</a></div></div> }
+@else if (loaded()) {
+  <form [formGroup]="form" (ngSubmit)="save()" class="invoice-layout" novalidate>
+    <section class="card"><div class="card-header"><h2>Les détails de votre facture</h2><span class="badge">Nouveau document</span></div>
+      <fieldset [disabled]="saving()" class="invoice-fields"><div class="field customer-field"><label for="invoice-customer">Client à facturer</label><select id="invoice-customer" formControlName="customerId" aria-describedby="invoice-customer-error" [attr.aria-invalid]="form.controls.customerId.touched && form.controls.customerId.invalid"><option [ngValue]="0">Sélectionner un client</option>@for (customer of customers(); track customer.id) { <option [ngValue]="customer.id">{{ customer.name }} · {{ customer.email }}</option> }</select>@if (form.controls.customerId.touched && form.controls.customerId.invalid) { <small id="invoice-customer-error" class="field-error">Sélectionnez un client.</small> }</div>
+        <div class="lines-heading"><h2>Produits facturés</h2><span class="muted">{{ form.controls.items.length }} ligne(s)</span></div>
+        <div formArrayName="items">
+          @for (line of form.controls.items.controls; track line; let index = $index) {
+            <div class="invoice-line" [formGroupName]="index">
+              <div class="field"><label [for]="'line-product-' + index">Produit {{ index + 1 }}</label><select [id]="'line-product-' + index" formControlName="productId" [attr.aria-invalid]="line.controls.productId.touched && line.controls.productId.invalid" [attr.aria-describedby]="'line-product-error-' + index"><option [ngValue]="0">Sélectionner un produit</option>@for (product of products(); track product.id) { <option [ngValue]="product.id">{{ product.name }} · {{ product.price | currency }}</option> }</select>@if (line.controls.productId.touched && line.controls.productId.invalid) { <small [id]="'line-product-error-' + index" class="field-error">Sélectionnez un produit.</small> }</div>
+              <div class="field"><label [for]="'line-quantity-' + index">Quantité {{ index + 1 }}</label><input [id]="'line-quantity-' + index" formControlName="quantity" type="number" min="1" max="2147483647" step="1" [attr.aria-invalid]="line.controls.quantity.touched && line.controls.quantity.invalid" [attr.aria-describedby]="'line-quantity-error-' + index">@if (line.controls.quantity.touched && line.controls.quantity.invalid) { <small [id]="'line-quantity-error-' + index" class="field-error">Entier de 1 à 2 147 483 647.</small> }</div>
+              <div class="line-total"><small class="muted">Sous-total estimé</small><strong>{{ lineAmount(index) | currency }}</strong><button class="text-button danger" type="button" [disabled]="form.controls.items.length === 1" (click)="removeLine(index)" [attr.aria-label]="'Retirer la ligne ' + (index + 1)">Retirer</button></div>
+            </div>
+          }
+        </div>
+        @if (form.controls.items.hasError('duplicateProducts')) { <p class="field-error" role="alert">Un produit ne peut apparaître qu’une seule fois. Modifiez sa quantité plutôt que de l’ajouter à nouveau.</p> }
+        <button class="button secondary small" type="button" [disabled]="form.controls.items.length >= 100" (click)="addLine()">＋ Ajouter une ligne</button>
+      </fieldset>
+    </section>
+    <aside class="card summary"><div class="card-header"><h2>Récapitulatif</h2></div><div class="card-body"><span class="muted">Montant estimé</span><p class="summary-total" aria-live="polite">{{ total() | currency }}</p><p class="form-hint">Le montant final utilise les prix du serveur au moment de l’enregistrement. Aucun prix n’est envoyé depuis le navigateur.</p><button class="button" type="submit" [disabled]="saving()">{{ saving() ? 'Création en cours…' : 'Créer la facture' }}</button><a class="cancel-link" routerLink="/factures">Revenir aux factures</a></div></aside>
+  </form>
+}
