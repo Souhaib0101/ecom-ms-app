@@ -1,6 +1,7 @@
 import { CurrencyPipe, DatePipe } from '@angular/common';
-import { Component, DestroyRef, inject, signal } from '@angular/core';
+import { Component, computed, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { BehaviorSubject, catchError, combineLatest, finalize, of, switchMap } from 'rxjs';
 import { apiError } from '../../core/api-error';
@@ -9,7 +10,7 @@ import { BillSummary, Customer } from '../../core/models';
 import { Feedback } from '../../shared/feedback';
 
 @Component({
-  imports: [CurrencyPipe, DatePipe, RouterLink, Feedback],
+  imports: [CurrencyPipe, DatePipe, FormsModule, RouterLink, Feedback],
   templateUrl: './bills.html',
 })
 export class Bills {
@@ -21,33 +22,48 @@ export class Bills {
   readonly bills = signal<BillSummary[]>([]);
   readonly customers = signal<Customer[]>([]);
   readonly selectedCustomer = signal<number | undefined>(undefined);
+  readonly missingCustomer = computed(() => {
+    const id = this.selectedCustomer();
+    return id !== undefined && !this.customers().some((customer) => customer.id === id);
+  });
   readonly loading = signal(true);
   readonly error = signal('');
   readonly lookupError = signal('');
 
   constructor() {
     this.loadCustomers();
-    combineLatest([this.route.queryParamMap, this.refresh]).pipe(
-      switchMap(([params]) => {
-        const value = Number(params.get('client'));
-        const customerId = Number.isSafeInteger(value) && value > 0 ? value : undefined;
-        this.selectedCustomer.set(customerId);
-        this.loading.set(true);
-        this.error.set('');
-        return this.api.bills(customerId).pipe(
-          catchError((error) => { this.error.set(apiError(error)); return of([]); }),
-          finalize(() => this.loading.set(false)),
-        );
-      }),
-      takeUntilDestroyed(),
-    ).subscribe((bills) => this.bills.set([...bills].sort((a, b) => b.id - a.id)));
+    combineLatest([this.route.queryParamMap, this.refresh])
+      .pipe(
+        switchMap(([params]) => {
+          const value = Number(params.get('client'));
+          const customerId = Number.isSafeInteger(value) && value > 0 ? value : undefined;
+          this.selectedCustomer.set(customerId);
+          this.loading.set(true);
+          this.error.set('');
+          return this.api.bills(customerId).pipe(
+            catchError((error) => {
+              this.error.set(apiError(error));
+              return of([]);
+            }),
+            finalize(() => this.loading.set(false)),
+          );
+        }),
+        takeUntilDestroyed(),
+      )
+      .subscribe((bills) => this.bills.set([...bills].sort((a, b) => b.id - a.id)));
   }
 
-  reload(): void { this.refresh.next(); this.loadCustomers(); }
+  reload(): void {
+    this.refresh.next();
+    this.loadCustomers();
+  }
 
-  filter(event: Event): void {
-    const value = (event.target as HTMLSelectElement).value;
-    void this.router.navigate([], { relativeTo: this.route, queryParams: { client: value || null }, queryParamsHandling: 'merge' });
+  filter(value: string): void {
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { client: value || null },
+      queryParamsHandling: 'merge',
+    });
   }
 
   customerName(id: number): string {
@@ -56,9 +72,15 @@ export class Bills {
 
   private loadCustomers(): void {
     this.lookupError.set('');
-    this.api.allCustomers().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (customers) => this.customers.set(customers),
-      error: () => this.lookupError.set('Les noms des clients sont indisponibles. Les factures restent consultables avec leur référence client.'),
-    });
+    this.api
+      .allCustomers()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (customers) => this.customers.set(customers),
+        error: () =>
+          this.lookupError.set(
+            'Les noms des clients sont indisponibles. Les factures restent consultables avec leur référence client.',
+          ),
+      });
   }
 }
